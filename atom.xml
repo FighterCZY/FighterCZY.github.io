@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[Snail-Mushroom]]></title>
+  <subtitle><![CDATA[practice makes prefect]]></subtitle>
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://snail-mushroom.com/"/>
+  <updated>2014-10-28T15:27:49.000Z</updated>
+  <id>http://snail-mushroom.com/</id>
+  
+  <author>
+    <name><![CDATA[Zach Cai with Kathy Zhao]]></name>
+    <email><![CDATA[czy1991@gmail.com]]></email>
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Singleton Mode]]></title>
+    <link href="http://snail-mushroom.com/2014/10/26/Singleton-Mode/"/>
+    <id>http://snail-mushroom.com/2014/10/26/Singleton-Mode/</id>
+    <published>2014-10-27T01:34:13.000Z</published>
+    <updated>2014-10-28T15:27:49.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="[Design_Pattern]_Singleton">[Design Pattern] Singleton</h3><h4 id="First_sight">First sight</h4><ol>
+<li>Override the private constructor to avoid any new object creation with new operator.</li>
+<li>Declare a private static instance of the same class</li>
+<li>Provide a public static method that will return the singleton class instance variable. If the variable is not initialized then initialize it or else simply return the instance variable.<br>the code below is the raw version of the singleton pattern</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">null</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="How_to_make_it_Thread-Safe">How to make it Thread-Safe</h4><p>add synchronized keyword to the getInstance() method<br>this way is easy to think about, but if the instance is created, then we do not have to add lock to that getInstance() method. So we need to think about other ways.</p>
+<h5 id="Try_to_use_synchronized_block_instead_of_the_whole_method">Try to use synchronized block instead of the whole method</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Object mutex = <span class="keyword">new</span> Object(); <span class="comment">// volatile makes this Oject could be seen by other thread immediately when changing value</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span>(mutex) &#123;</span><br><span class="line">                <span class="keyword">if</span>(instance==<span class="keyword">null</span>) </span><br><span class="line">                    instance= <span class="keyword">new</span> ASingleton();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Using_double_check">Using double check</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Works with acquire/release semantics for volatile</span></span><br><span class="line"><span class="comment">// Broken under Java 1.4 and earlier semantics for volatile</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> Helper helper = <span class="keyword">null</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Helper <span class="title">getHelper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Helper result = helper;</span><br><span class="line">        <span class="keyword">if</span> (result == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span>(<span class="keyword">this</span>) &#123;</span><br><span class="line">                result = helper;</span><br><span class="line">                <span class="keyword">if</span> (result == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    helper = result = <span class="keyword">new</span> Helper();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// other functions and members...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Using_lazy_initialization">Using lazy initialization</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Correct lazy initialization in Java </span></span><br><span class="line"><span class="annotation">@ThreadSafe</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">HelperHolder</span> </span>&#123;</span><br><span class="line">       <span class="keyword">public</span> <span class="keyword">static</span> Helper helper = <span class="keyword">new</span> Helper();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Helper <span class="title">getHelper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> HelperHolder.helper;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    <summary type="html">
+    <![CDATA[This is a simple design pattern issue with small tricks]]>
+    
+    </summary>
+    
+      <category term="Tech Trick" scheme="http://snail-mushroom.com/tags/Tech-Trick/"/>
+    
+      <category term="design" scheme="http://snail-mushroom.com/tags/design/"/>
+    
+      <category term="thread" scheme="http://snail-mushroom.com/tags/thread/"/>
+    
+      <category term="Tech Interview" scheme="http://snail-mushroom.com/categories/Tech-Interview/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Implement Trie]]></title>
+    <link href="http://snail-mushroom.com/2014/10/13/Implement-Trie/"/>
+    <id>http://snail-mushroom.com/2014/10/13/Implement-Trie/</id>
+    <published>2014-10-14T03:03:37.000Z</published>
+    <updated>2014-10-14T00:09:14.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="simply_implement_the_insert_and_delete_function">simply implement the insert and delete function</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TrieNode</span> </span>&#123; </span><br><span class="line">    <span class="keyword">private</span> TrieNode[] children;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">char</span> character;</span><br><span class="line">     </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TrieNode</span><span class="params">(<span class="keyword">char</span> c)</span> </span>&#123;</span><br><span class="line">        children = <span class="keyword">new</span> TrieNode[<span class="number">26</span>];</span><br><span class="line">        character = c;</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insert</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (word.length() == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">         </span><br><span class="line">        <span class="keyword">int</span> charPos = word.charAt(<span class="number">0</span>) - <span class="string">'a'</span>;</span><br><span class="line">         </span><br><span class="line">        <span class="keyword">if</span> (children[charPos] == <span class="keyword">null</span>)</span><br><span class="line">            children[charPos] = <span class="keyword">new</span> TrieNode(word.charAt(<span class="number">0</span>));</span><br><span class="line">         </span><br><span class="line">        children[charPos].insert(word.substring(<span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">search</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (word.length() == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">         </span><br><span class="line">        <span class="keyword">int</span> charPos = word.charAt(<span class="number">0</span>) - <span class="string">'a'</span>;</span><br><span class="line">         </span><br><span class="line">        <span class="keyword">if</span> (children[charPos] == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">         </span><br><span class="line">        <span class="keyword">return</span> children[charPos].search(word.substring(<span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    <summary type="html">
+    <![CDATA[this a naive version of Trie (dict tree)]]>
+    
+    </summary>
+    
+      <category term="Tree" scheme="http://snail-mushroom.com/tags/Tree/"/>
+    
+      <category term="Algorithm and Data Structure" scheme="http://snail-mushroom.com/categories/Algorithm-and-Data-Structure/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Synchronized and Multi-thread problems]]></title>
+    <link href="http://snail-mushroom.com/2014/10/13/Synchronized-and-Multi-thread-problems/"/>
+    <id>http://snail-mushroom.com/2014/10/13/Synchronized-and-Multi-thread-problems/</id>
+    <published>2014-10-13T19:20:03.000Z</published>
+    <updated>2014-10-14T00:11:47.000Z</updated>
+    <content type="html"><![CDATA[<!-- # Welcome the the multi-thread problems -->
+<!-- --------- -->
+<h2 id="Concurrency">Concurrency</h2><h3 id="Threads_vs_Processes">Threads vs Processes</h3><p>Each process provides the resources needed to execute a program. Each process is started with a single thread, often called the primary thread, but can create additional threads from any of its threads. A thread is the entity within a process that can be scheduled for execution. All threads of a process share its virtual address space and system resources.</p>
+<blockquote>
+<p>e.g. What’s the difference between a thread and a process? ( CtCI: 16.1)</p>
+</blockquote>
+<h3 id="Concurrency_vs_Parallelism">Concurrency vs Parallelism</h3><p>Concurrency is when two tasks can start, run, and complete in overlapping time periods. It doesn’t necessarily mean they’ll ever both be running at the same instant. e.g. multitasking on a single-core machine.<br>Parallelism is when tasks literally run at the same time, eg. on a multicore processor.</p>
+<h3 id="Deadlocks">Deadlocks</h3><p>A deadlock is a situation that each thread is waiting for the other thread to reliquish a lock.<br>Deadlock conditions: (1) Mutual Exclusion (2) Hold and Wait (3) No Preemption (4) Circular Wait.</p>
+<blockquote>
+<p>“Circular Wait” is the key to judge deadlock：Build a directed graph, each edge (w,v) exist if a process declare that it will request lock v right after lock w.Any circle in this graph correspond to a deadlock.</p>
+</blockquote>
+<h4 id="Famous_dining_philosophers">Famous dining philosophers</h4><p>use the lock() to solve this problem<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Chopstick</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Lock lock;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Chopstick</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">pickUp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> lock.tryLock();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">putDown</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Philosopher</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> bites = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">private</span> Chopstick left;</span><br><span class="line">    <span class="keyword">private</span> Chopstick right;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Philosopher</span><span class="params">(Chopstick left, Chopstick right)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.left = left;</span><br><span class="line">        <span class="keyword">this</span>.right = right;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (pickUp()) &#123;</span><br><span class="line">            chew();</span><br><span class="line">            putDown();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">pickUp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">/* attempt to pick up */</span></span><br><span class="line">        <span class="keyword">if</span> (!left.pickUp()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!right.pickUp()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">chew</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">putDown</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        left.putDown();</span><br><span class="line">        right.putDown();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; bites; i++) &#123;</span><br><span class="line">            eat();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>note: To prevent deadlock, we can implement a strategy where a philosopher will put down his left chopstick if he is unable to obtain the right one.</p>
+</blockquote>
+<h2 id="Concurrancy_in_java">Concurrancy in java</h2><p>When a standalone application is run, a user thread is automatically created to execute the main() method.</p>
+<h3 id="Create_a_thread">Create a thread</h3><p>step1: public class RunnableThread implements Runnable + Thread thread = new Thread(instance); 或<br>public class ThreadExample extends Thread + ThreadExample thread = new ThreadExample(); 需要实现 public void run()<br>step2: 运行 thread.start();</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th style="text-align:right">Method 1</th>
+<th style="text-align:center">Method 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Step 1</td>
+<td style="text-align:right">class RunnableThread implements Runnable</td>
+<td style="text-align:center">class ThreadExample extends Thread</td>
+</tr>
+<tr>
+<td>Step 2</td>
+<td style="text-align:right">Thread thread = new Thread(instance);</td>
+<td style="text-align:center">ThreadExample thread = new ThreadExample();</td>
+</tr>
+<tr>
+<td>Step 3</td>
+<td style="text-align:right">thread.start();</td>
+<td style="text-align:center">thread.start();</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>note: need to implement void run() {} before thread.start();</p>
+</blockquote>
+<h3 id="Synchronization_and_Locks">Synchronization and Locks</h3><p>给method或block加注synchronized关键词，即禁止不同thread访问同一object的任何synchronized对象；特别地，如果加注static关键词，则对该class的synchronized区域有效。<br>JAVA的实现类 ReentrantLock 提供更加精细的控制，lock()可以用于尝试获取控制权，若当前lock由其他thread控制，则当前thread禁用并等待，直到 owner thread 释放控制权；相对地，trylock()则立即返回false。unlock()则用于释放控制权。</p>
+<blockquote>
+<p>e.g. You are given a class with synchronized method A &amp; B, and a normal method C.If you have two threads visiting the same instance of that class, they cannot execute A &amp; B at the same time, but they can execute A &amp; C simultaneously.</p>
+</blockquote>
+<h3 id="Implement_a_thread-safe_Blocking_queue">Implement a thread-safe Blocking queue</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BlockingQueue</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> List queue = <span class="keyword">new</span> LinkedList();</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span>  limit = <span class="number">10</span>;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">BlockingQueue</span><span class="params">(<span class="keyword">int</span> limit)</span></span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.limit = limit;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//enque method</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">enqueue</span><span class="params">(Object item)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="keyword">this</span>.queue.size() == <span class="keyword">this</span>.limit) &#123;</span><br><span class="line">      wait();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//Notify all the threads that are waiting </span></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">this</span>.queue.size() == <span class="number">0</span>) &#123;</span><br><span class="line">      notifyAll();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.queue.add(item);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// dequeue method</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Object <span class="title">dequeue</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="keyword">this</span>.queue.size() == <span class="number">0</span>)&#123;</span><br><span class="line">      wait();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">this</span>.queue.size() == <span class="keyword">this</span>.limit)&#123;<span class="function">f</span><br><span class="line">      <span class="title">notifyAll</span><span class="params">()</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.queue.remove(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li>note: this code uses the moniter structure in java, you do not need to declare a moniter, but you could use wait() and notifyAll() directyl</li>
+<li>note: if you used wait() sleep() join() method, you must throw InterruptedException</li>
+</ul>
+</blockquote>
+<h3 id="Implement_Read/Write_Lock_for_HashMap/Buffer/etc">Implement Read/Write Lock for HashMap/Buffer/etc</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;K,V&gt; m = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ReentrantReadWriteLock rwl = <span class="keyword">new</span> ReentrantReadWriteLock(<span class="keyword">true</span>);  <span class="comment">// fair mode</span></span><br><span class="line">     </span><br><span class="line">    <span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(K key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            rwl.readLock().lock();</span><br><span class="line">            <span class="keyword">return</span> m.get(key);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            rwl.readLock().unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            rwl.writeLock().lock();</span><br><span class="line">            <span class="keyword">return</span> m.put(key, value);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            rwl.writeLock().unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    <summary type="html">
+    <![CDATA[Some interesting problems about the multi-thread problems in the code interview]]>
+    
+    </summary>
+    
+      <category term="OS" scheme="http://snail-mushroom.com/tags/OS/"/>
+    
+      <category term="Synchronize" scheme="http://snail-mushroom.com/tags/Synchronize/"/>
+    
+      <category term="thread" scheme="http://snail-mushroom.com/tags/thread/"/>
+    
+      <category term="Tech Interview" scheme="http://snail-mushroom.com/categories/Tech-Interview/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Add Binary]]></title>
+    <link href="http://snail-mushroom.com/2014/10/09/Add-Binary/"/>
+    <id>http://snail-mushroom.com/2014/10/09/Add-Binary/</id>
+    <published>2014-10-10T04:24:31.000Z</published>
+    <updated>2014-10-10T01:27:49.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Add_Binary">Add Binary</h3><p>Given two binary strings, return their sum (also a binary string).</p>
+<p>For example,<br>a = “11”<br>b = “1”<br>Return “100”.</p>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> class Solution &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">String</span> addBinary(<span class="keyword">String</span> a, <span class="keyword">String</span> b) &#123;</span><br><span class="line">        <span class="built_in">char</span>[] c1 = a.toCharArray();</span><br><span class="line">        <span class="built_in">char</span>[] c2 = b.toCharArray();</span><br><span class="line">        <span class="built_in">int</span> l1 = c1.length;</span><br><span class="line">        <span class="built_in">int</span> l2 = c2.length;</span><br><span class="line">        <span class="built_in">int</span>[] c3 = <span class="keyword">new</span> <span class="built_in">int</span>[Math.<span class="built_in">max</span>(c1.length, c2.length)+<span class="number">1</span>];</span><br><span class="line">        <span class="built_in">int</span> l3 = c3.length;</span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; Math.<span class="built_in">max</span>(c1.length, c2.length); i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; l1) &#123; c3[l3-i-<span class="number">1</span>] += (<span class="built_in">int</span>)(c1[l1-i-<span class="number">1</span>] - <span class="string">'0'</span>); &#125;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; l2) &#123; c3[l3-i-<span class="number">1</span>] += (<span class="built_in">int</span>)(c2[l2-i-<span class="number">1</span>] - <span class="string">'0'</span>); &#125;</span><br><span class="line">            c3[l3-i-<span class="number">2</span>] = c3[l3-i-<span class="number">1</span>] / <span class="number">2</span>;</span><br><span class="line">            c3[l3-i-<span class="number">1</span>] %= <span class="number">2</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; l3; i++) &#123;sb.<span class="built_in">append</span>(c3[i]); &#125;</span><br><span class="line">        <span class="keyword">String</span> res = sb.toString();</span><br><span class="line">        <span class="keyword">if</span> (res.charAt(<span class="number">0</span>) == <span class="string">'0'</span>) <span class="keyword">return</span> res.substring(<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Add_1_to_a_Int_without_using_‘+’_or_‘-‘">Add 1 to a Int without using ‘+’ or ‘-‘</h3><p>This time, bit manipulation will be a good way.<br><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">int</span> <span class="title">solve</span><span class="params">(<span class="keyword">int</span> a)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> res = a;</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((a &amp; <span class="number">1</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> (res | (<span class="number">1</span>&lt;&lt;i));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            res &amp;= ~(<span class="number">1</span>&lt;&lt;i);</span><br><span class="line">            a = a &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            i++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[use bit operation to do the add one to binary]]>
+    
+    </summary>
+    
+      <category term="Bit" scheme="http://snail-mushroom.com/tags/Bit/"/>
+    
+      <category term="Tech Trick" scheme="http://snail-mushroom.com/tags/Tech-Trick/"/>
+    
+      <category term="LeetCode" scheme="http://snail-mushroom.com/categories/LeetCode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Loop unwinding]]></title>
+    <link href="http://snail-mushroom.com/2014/10/08/Loop-unwinding/"/>
+    <id>http://snail-mushroom.com/2014/10/08/Loop-unwinding/</id>
+    <published>2014-10-08T23:34:33.000Z</published>
+    <updated>2014-10-09T02:27:13.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Loop_Unwinding">Loop Unwinding</h3><h1 id="Original_Version">Original Version</h1><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="built_in">i</span> = <span class="number">1</span>; <span class="built_in">i</span> &lt;= <span class="number">60</span>; <span class="built_in">i</span>++) <span class="cell">&#123;</span><br><span class="line">   a[i] = a[i] * b + c;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<h1 id="Improved_Version">Improved Version</h1><figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">60</span>; i+=<span class="number">3</span>) <span class="comment">&#123;</span><br><span class="line">  a[i] = a[i] * b + c;</span><br><span class="line">  a[i+1] = a[i+1] * b + c;</span><br><span class="line">  a[i+2] = a[i+2] * b + c;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>As we could see, the run times of ‘i&lt;=60’ and i++ have been reduced 3 times<br>Although the code is not that elegent, but the performance will be advanced.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[a small trick to improve the performance of for loop]]>
+    
+    </summary>
+    
+      <category term="Compiler" scheme="http://snail-mushroom.com/tags/Compiler/"/>
+    
+      <category term="Tech Trick" scheme="http://snail-mushroom.com/tags/Tech-Trick/"/>
+    
+      <category term="Code Trick" scheme="http://snail-mushroom.com/categories/Code-Trick/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Iterator Storm]]></title>
+    <link href="http://snail-mushroom.com/2014/10/08/Iterator-Storm/"/>
+    <id>http://snail-mushroom.com/2014/10/08/Iterator-Storm/</id>
+    <published>2014-10-08T17:01:28.000Z</published>
+    <updated>2014-10-14T18:46:35.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Question_:_Implement_peek()_and_pop()_from_java_iterator()-_for_example_[1,2,3,4,5],_peek()_=_1,_pop()_=_1,_peek()_=_2,_peek()_=_2,_pop()_=_2">Question : Implement peek() and pop() from java iterator(). for   example [1,2,3,4,5], peek() = 1, pop() = 1, peek() = 2, peek() = 2, pop() = 2</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PeekIterator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Iterator&lt;T&gt; iterator;     <span class="comment">// notice there is a keyword'final'</span></span><br><span class="line">    <span class="keyword">private</span> T nextitem;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PeekIterator</span><span class="params">(Iterator&lt;T&gt; iterator)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.iterator = iterator;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (nextitem != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (iterator.hasNext()) &#123;</span><br><span class="line">            nextitem = iterator.next();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nextitem != <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!hasNext()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> (<span class="keyword">new</span> NoSuchElementException(<span class="string">"Iterator has no elements left."</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        T toReturn = nextitem;</span><br><span class="line">        nextitem = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">return</span> toReturn;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">peek</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!hasNext()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> (<span class="keyword">new</span> NoSuchElementException(<span class="string">"Iterator has no elements left."</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nextitem;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: there is a ‘final’ modifier for iterator, I think it is because we need to keep consistency for inner and outer iteraters. </p>
+</blockquote>
+<h3 id="Question_:_Rotate_Iterater">Question : Rotate Iterater</h3><p>实现一个rotateIterator(), 构造函数传入List<iterator>, 实现next(), hasNext().例如:<br>传入的三个iterator里面的值分别是[[1,2,3],[4,5,6], [7,8]], 那rotateIterator的next()应该输出[1,4,7,2,5,8,3,6]. 就是竖着遍历每个iterator输出, 如果当前的iterator没有了, 就跳到下一个.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RotateIterator</span>&lt;<span class="title">E</span>&gt; <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> List&lt;Iterator&lt;E&gt;&gt; l;</span><br><span class="line">    <span class="keyword">public</span> Queue&lt;Integer&gt; q = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">     </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RotateIterator</span><span class="params">(List&lt;Iterator&lt;E&gt;&gt; it)</span> </span>&#123;</span><br><span class="line">        l = it;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; it.size(); i++)</span><br><span class="line">            q.offer(i);</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (!q.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">int</span> i = q.peek();</span><br><span class="line">            <span class="keyword">if</span> (l.get(i).hasNext())</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                q.poll();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (!q.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">int</span> i = q.peek();</span><br><span class="line">            <span class="keyword">if</span> (l.get(i).hasNext()) &#123;</span><br><span class="line">                q.poll();</span><br><span class="line">                q.offer(i);</span><br><span class="line">                <span class="keyword">return</span> l.get(i).next();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                q.poll();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">         </span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></iterator></p>
+<h3 id="Question_Deep_Iterator">Question Deep Iterator</h3><p>This is used to do the iterative in List<list></list></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeepIterator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">Iterator</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// A reference to the item which will be returned during</span></span><br><span class="line">    <span class="comment">// the next call to next().</span></span><br><span class="line">    <span class="keyword">private</span> T nextItem;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Stack&lt;Iterator&lt;?&gt;&gt; stack = <span class="keyword">new</span> Stack&lt;Iterator&lt;?&gt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DeepIterator</span><span class="params">(Collection&lt;?&gt; collection)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (collection == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"Can't iterate over a null collection."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        stack.push(collection.iterator());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="annotation">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (nextItem != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (!stack.isEmpty()) &#123;</span><br><span class="line">            Iterator&lt;?&gt; iter = stack.peek();</span><br><span class="line">            <span class="keyword">if</span> (iter.hasNext()) &#123;</span><br><span class="line">                Object item = iter.next();</span><br><span class="line">                <span class="keyword">if</span> (item <span class="keyword">instanceof</span> Collection&lt;?&gt;) &#123;</span><br><span class="line">                    stack.push(((Collection&lt;?&gt;) item).iterator());</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    nextItem = (T) item;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                stack.pop();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (hasNext()) &#123;</span><br><span class="line">            T toReturn = nextItem;</span><br><span class="line">            nextItem = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">return</span> toReturn;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    <summary type="html">
+    <![CDATA[some interesting problem of implementing iterators]]>
+    
+    </summary>
+    
+      <category term="Iterator" scheme="http://snail-mushroom.com/tags/Iterator/"/>
+    
+      <category term="design" scheme="http://snail-mushroom.com/tags/design/"/>
+    
+      <category term="Tech Interview" scheme="http://snail-mushroom.com/categories/Tech-Interview/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Fight for 50 days]]></title>
+    <link href="http://snail-mushroom.com/2014/10/07/Fight-for-50-days/"/>
+    <id>http://snail-mushroom.com/2014/10/07/Fight-for-50-days/</id>
+    <published>2014-10-08T05:37:14.000Z</published>
+    <updated>2014-10-08T02:39:09.000Z</updated>
+    <content type="html"><![CDATA[<p>Let’s fight for 50 days!<br>I am leeroy Jekkins!!!<br>Go! Go! Go!</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Let’s fight for 50 days!<br>I am leeroy Jekkins!!!<br>Go! Go! Go!</p>
+]]>
+    </summary>
+    
+      <category term="Snail" scheme="http://snail-mushroom.com/tags/Snail/"/>
+    
+      <category term="mood" scheme="http://snail-mushroom.com/tags/mood/"/>
+    
+      <category term="Diary" scheme="http://snail-mushroom.com/categories/Diary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[[LeetCode]Word Break]]></title>
+    <link href="http://snail-mushroom.com/2014/10/07/-LeetCode-Word-Break/"/>
+    <id>http://snail-mushroom.com/2014/10/07/-LeetCode-Word-Break/</id>
+    <published>2014-10-07T20:02:03.000Z</published>
+    <updated>2014-10-07T17:42:37.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="1_Naive_version">1 Naive version</h3><p>You can use dfs to brute force search the solution.<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public class Solution &#123;</span><br><span class="line">    public boolean wordBreak(String s, <span class="operator"><span class="keyword">Set</span>&lt;<span class="keyword">String</span>&gt; dict) &#123;</span><br><span class="line">             <span class="keyword">return</span> wordBreakHelper(s, dict, <span class="number">0</span>);</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    public boolean wordBreakHelper(String s, <span class="operator"><span class="keyword">Set</span>&lt;<span class="keyword">String</span>&gt; dict, <span class="built_in">int</span> <span class="keyword">start</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">start</span> == s.length()) </span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span></span><br><span class="line"> </span><br><span class="line">        for(String a: dict)&#123;</span><br><span class="line">            int len = a.length();</span><br><span class="line">            int <span class="operator"><span class="keyword">end</span> = <span class="keyword">start</span>+<span class="keyword">len</span>;</span></span><br><span class="line"> </span><br><span class="line">            //<span class="operator"><span class="keyword">end</span> <span class="keyword">index</span> should be &lt;= <span class="keyword">string</span> length</span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">end</span> &gt; s.length()) </span><br><span class="line">                <span class="keyword">continue</span>;</span></span><br><span class="line"> </span><br><span class="line">            if(s.substring(<span class="operator"><span class="keyword">start</span>, <span class="keyword">start</span>+<span class="keyword">len</span>).equals(a))</span><br><span class="line">                <span class="keyword">if</span>(wordBreakHelper(s, dict, <span class="keyword">start</span>+<span class="keyword">len</span>))</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">true</span>;</span></span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-DP_O(n^2)">2.DP O(n^2)</h3><p>simple and clean<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">wordBreak</span><span class="params">(String s, Set&lt;String&gt; dict)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span>[] d = <span class="keyword">new</span> <span class="keyword">boolean</span>[s.length()+<span class="number">1</span>];</span><br><span class="line">        d[<span class="number">0</span>] = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">int</span> n = s.length();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; i; j++) &#123;</span><br><span class="line">                d[i] |= dict.contains(s.substring(j,i)) &amp;&amp; d[j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> d[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="3-DP_in_O(nk)">3.DP in O(nk)</h3><p>sometimes, when the size of the dictionary is really small, using this solution will be much more faster than the O(n^2) solution.<br>Reference to <a href="http://www.programcreek.com/2012/12/leetcode-solution-word-break/" target="_blank" rel="external">http://www.programcreek.com/2012/12/leetcode-solution-word-break/</a><br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line">    <span class="keyword">public</span> <span class="typename">boolean</span> wordBreak(String s, Set&lt;String&gt; dict) &#123;</span><br><span class="line">        <span class="typename">boolean</span>[] t = <span class="keyword">new</span> <span class="typename">boolean</span>[s.length()+<span class="number">1</span>];</span><br><span class="line">        t[<span class="number">0</span>] = <span class="literal">true</span>; <span class="comment">//set first to be true, why?</span></span><br><span class="line">        <span class="comment">//Because we need initial state</span></span><br><span class="line"> </span><br><span class="line">        <span class="keyword">for</span>(<span class="typename">int</span> i=<span class="number">0</span>; i&lt;s.length(); i++)&#123;</span><br><span class="line">            <span class="comment">//should continue from match position</span></span><br><span class="line">            <span class="keyword">if</span>(!t[i]) </span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line"> </span><br><span class="line">            <span class="keyword">for</span>(String <span class="string">a:</span> dict)&#123;</span><br><span class="line">                <span class="typename">int</span> len = a.length();</span><br><span class="line">                <span class="typename">int</span> end = i + len;</span><br><span class="line">                <span class="keyword">if</span>(end &gt; s.length())</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line"> </span><br><span class="line">                <span class="keyword">if</span>(t[end]) <span class="keyword">continue</span>;</span><br><span class="line"> </span><br><span class="line">                <span class="keyword">if</span>(s.substring(i, end).equals(a))&#123;</span><br><span class="line">                    t[end] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> t[s.length()];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="4-follow_up_Word_Break_II">4.follow up Word Break II</h3><p>In this probelm, we need to run the word break I code first to judge whether this string could be break.<br>Because we need to print all of the solution, so DP is not that Beneficial. We could use brute force dfs here.<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public class Solution &#123;</span><br><span class="line">    public ArrayList&lt;String&gt; wordBreak(String <span class="keyword">s</span>, Set&lt;String&gt; dict) &#123;</span><br><span class="line">        ArrayList&lt;String&gt; ret = new ArrayList&lt;String&gt;();</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">s</span>==null || <span class="keyword">s</span>.<span class="keyword">length</span>()==<span class="number">0</span>) <span class="keyword">return</span> ret;</span><br><span class="line">        boolean[] d = new boolean[<span class="keyword">s</span>.<span class="keyword">length</span>()+<span class="number">1</span>];</span><br><span class="line">        d[<span class="number">0</span>] = true;</span><br><span class="line">        <span class="keyword">int</span> n = <span class="keyword">s</span>.<span class="keyword">length</span>();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; i; j++) &#123;</span><br><span class="line">                d[i] |= dict.contains(<span class="keyword">s</span>.substring(j,i)) &amp;&amp; d[j];</span><br><span class="line">                <span class="keyword">if</span> (d[i]) <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!d[n]) <span class="keyword">return</span> ret;</span><br><span class="line">        dfs(<span class="keyword">s</span>, <span class="number">0</span>, new StringBuffer(), ret, dict);</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void dfs(String <span class="keyword">s</span>, <span class="keyword">int</span> start, StringBuffer curr, ArrayList&lt;String&gt; ret, Set&lt;String&gt; dict)  &#123;</span><br><span class="line">        <span class="keyword">int</span> n = <span class="keyword">s</span>.<span class="keyword">length</span>();</span><br><span class="line">        <span class="keyword">if</span> (start &gt;= n) &#123;</span><br><span class="line">            ret.add(curr.toString());</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = start+<span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            String <span class="sub"><span class="keyword">sub</span> = s.substring(start, i);</span></span><br><span class="line">            <span class="keyword">if</span> (dict.contains(<span class="sub"><span class="keyword">sub</span>)) &#123;</span></span><br><span class="line">                <span class="keyword">int</span> temp = curr.<span class="keyword">length</span>();</span><br><span class="line">                <span class="keyword">if</span> (curr.<span class="keyword">length</span>() != <span class="number">0</span>) curr.append(<span class="string">" "</span>);</span><br><span class="line">                curr.append(<span class="sub"><span class="keyword">sub</span>);</span></span><br><span class="line">                dfs(<span class="keyword">s</span>, i, curr, ret, dict);</span><br><span class="line">                curr.<span class="keyword">delete</span>(temp, curr.<span class="keyword">length</span>());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[This is an DP problem, which is trivial and high frequent in the code interview. Some interesting details in Dynamic programming]]>
+    
+    </summary>
+    
+      <category term="DP" scheme="http://snail-mushroom.com/tags/DP/"/>
+    
+      <category term="LeetCode" scheme="http://snail-mushroom.com/categories/LeetCode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Create an Array of ArrayList]]></title>
+    <link href="http://snail-mushroom.com/2014/10/06/Create-an-Array-of-ArrayList/"/>
+    <id>http://snail-mushroom.com/2014/10/06/Create-an-Array-of-ArrayList/</id>
+    <published>2014-10-06T23:43:56.000Z</published>
+    <updated>2014-10-06T20:50:49.000Z</updated>
+    <content type="html"><![CDATA[<p>Sometime we want to create an array of arraylist<br>we could only use<br><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;ArrayList&lt;<span class="built_in">Element</span>&gt;&gt; a = <span class="keyword">new</span> ArrayList&lt;ArrayList&lt;<span class="built_in">Element</span>&gt;&gt;();</span><br></pre></td></tr></table></figure></p>
+<p>At this time, we introduce another way,<br><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;<span class="built_in">Element</span>&gt;[] a = (ArrayList&lt;<span class="built_in">Element</span>&gt;[])<span class="keyword">new</span> ArrayList[<span class="number">4</span>];</span><br></pre></td></tr></table></figure></p>
+<p>Enjoy!</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[a small trick to create Array of ArrayList]]>
+    
+    </summary>
+    
+      <category term="Array" scheme="http://snail-mushroom.com/tags/Array/"/>
+    
+      <category term="java" scheme="http://snail-mushroom.com/tags/java/"/>
+    
+      <category term="Code Trick" scheme="http://snail-mushroom.com/categories/Code-Trick/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[[Repost]How to build static blog by hexo]]></title>
+    <link href="http://snail-mushroom.com/2014/10/05/-Repost-How-to-build-static-blog-by-hexo/"/>
+    <id>http://snail-mushroom.com/2014/10/05/-Repost-How-to-build-static-blog-by-hexo/</id>
+    <published>2014-10-05T22:41:13.000Z</published>
+    <updated>2014-10-05T19:43:52.000Z</updated>
+    <content type="html"><![CDATA[<p>首先，<em>这不是一篇详尽的完整的教程</em>，只是记录大致的hexo建站流程以及自己折腾的过程。因为网上关于hexo的教程已经太多，一搜一大把。但是我还是推荐英文尚可的直接阅读hexo作者的<strong><a href="http://zespia.tw/hexo/docs/" target="_blank" rel="external">文档</a></strong>，因为很多教程也只是一知半解，还是看作者文档来的比较彻底。另外，hexo源代码开源，实在不行还可以去hexo的<a href="https://github.com/tommy351/hexo" target="_blank" rel="external">github</a>去提<a href="https://github.com/tommy351/hexo/issues" target="_blank" rel="external">issue</a>。</p>
+<p>折腾的成果就是你现在看到的这个博客，所以这里本身就是一个demo。^_^</p>
+<p><em>p.s. hexo作者据说是台湾的一名在校学生…… T_T 努力吧少年…… </em></p>
+<h2 id="建站流程">建站流程</h2><h3 id="1-_安装node-js以及git">1. 安装node.js以及git</h3><a id="more"></a>
+<h3 id="2-_安装hexo">2. 安装hexo</h3><pre><code>$ npm <span class="keyword">install</span> -g hexo
+</code></pre><h3 id="3-_部署github_pages">3. 部署github pages</h3><h4 id="3-1_github建立repo">3.1 github建立repo</h4><p>以下二选一。</p>
+<ul>
+<li>建立一个 username.github.com 的repo，username为你的github用户名，每个用户只能有一个这样的repo，则直接发布到master分支即可。</li>
+<li>建立一个项目repo，发布的branch是gh-pages.</li>
+</ul>
+<p>自定义域名</p>
+<p>如果你用自定义域名的话，github pages需要你建立一个名称为CNAME的文件，里面放入你的域名地址。如我的<a href="https://github.com/wileam/code/blob/gh-pages/CNAME" target="_blank" rel="external">CNAME文件</a>.</p>
+<p>因为每次deploy的时候hexo都会重新生成文件，所以直接加在github是不好使的，<strong>这个文件需要放在 hexo folder/source文件夹根目录下。</strong></p>
+<h4 id="3-2_hexo配置deploy信息：">3.2 hexo配置deploy信息：</h4><p>修改在blog根目录下的_config.yml，添加repo地址：</p>
+<pre><code><span class="attribute">deploy</span>:
+  <span class="attribute">type</span>: github
+  <span class="attribute">repository</span>: <span class="attribute">https</span>:<span class="comment">//github.com/[username]/[reponame].git</span>
+</code></pre><p>References:<br>[1] <a href="https://help.github.com/categories/20/articles" target="_blank" rel="external">github pages help</a><br>[2] <a href="http://zespia.tw/hexo/docs/deployment.html" target="_blank" rel="external">hexo Deployment Docs</a><br>[3] 想用BAE的可以看这篇：<a href="http://jimliu.net/2013/11/20/use-hexo-on-bae/" target="_blank" rel="external">在BAE上使用hexo搭建博客</a></p>
+<h3 id="4-_hexo基本操作">4. hexo基本操作</h3><ul>
+<li><p>新建博客</p>
+<pre><code>$ hexo init <span class="tag">&lt;<span class="title">folder</span>&gt;</span>
+</code></pre></li>
+</ul>
+<p>在该目录下就建立了你的hexo blog.</p>
+<ul>
+<li><p>新建文章</p>
+<pre><code>$ hexo init <span class="tag">&lt;<span class="title">title</span>&gt;</span>
+</code></pre></li>
+</ul>
+<p>会在source/_post新建一个名为 title.md 的文章，用喜欢的编辑器打开就可以用markdown语法写文章了。</p>
+<ul>
+<li><p>server</p>
+<pre><code>$ hexo <span class="keyword">server</span>
+</code></pre></li>
+</ul>
+<p>就可以在 localhost:4000/ 查看你的博客。</p>
+<ul>
+<li><p>generate &amp; deploy</p>
+<pre><code><span class="variable">$ </span>hexo generate
+<span class="variable">$ </span>hexo deploy
+</code></pre></li>
+</ul>
+<p>或者（以下这俩效果是完全一样的）</p>
+<pre><code>$ hexo <span class="keyword">generate</span> <span class="comment">--deploy</span>
+$ hexo deploy <span class="comment">--generate</span>
+</code></pre><h2 id="折腾">折腾</h2><h3 id="插件_plugins">插件 plugins</h3><ul>
+<li>rss生成 hexo-generator-feed</li>
+<li>sitemap hexo-generator-sitemap</li>
+</ul>
+<p>添加插件的基本操作是：</p>
+<pre><code>$ npm <span class="operator"><span class="keyword">install</span> &lt;<span class="keyword">plugin</span>-name&gt; <span class="comment">--save</span>
+$ npm <span class="keyword">update</span></span>
+</code></pre><p>然后修改blog根目录下的_config.yml，添加：</p>
+<pre><code>plugins:
+- plugin-<span class="property">name</span>
+</code></pre><p>插件部分详见：<a href="https://github.com/tommy351/hexo/wiki/Plugins" target="_blank" rel="external">https://github.com/tommy351/hexo/wiki/Plugins</a></p>
+<h3 id="组件_widgets">组件 widgets</h3><ul>
+<li>关于 about me [1]</li>
+<li>日历 calendar [2]</li>
+<li>返回页面顶部 Scrolltop [2]</li>
+<li>微博秀 weibo show [3]</li>
+</ul>
+<h3 id="其他调整">其他调整</h3><ul>
+<li>去掉addthis和Disqus</li>
+<li>添加多说 [1]</li>
+<li>添加百度统计 [1] 和Google Analytics<br>原先一直用GA然后现在两个都用是打算对比一下。。</li>
+<li>自动附上博客文章源码的github地址</li>
+<li><strong>添加social icons</strong></li>
+<li>样式微调</li>
+<li>字体微调 [1]</li>
+</ul>
+<p>优化调整参考了：<br>[1] <a href="https://github.com/LiuJi-Jim/hexo-theme-light" target="_blank" rel="external">jim-liu的优化版light theme</a><br>[2] <a href="https://github.com/howiefh/howiefh.github.io/" target="_blank" rel="external">净土howiefh</a><br>[3] <a href="http://app.weibo.com/tool/weiboshow" target="_blank" rel="external">微博开放平台</a></p>
+<h2 id="其他">其他</h2><h3 id="源代码管理">源代码管理</h3><p>由于我用的github pages所以发布是会发布到gh-pages分支，而我用这个博客repo的master分支管理整个博客的源代码。这样就可以轻松的实现不同电脑的同步了。<br>本博客的源代码：<a href="https://github.com/wileam/code/" target="_blank" rel="external">https://github.com/wileam/code/</a></p>
+<h3 id="发布显示更多">发布显示更多</h3><p>在你觉得适合的位置插入</p>
+<pre><code><span class="comment">&lt;!-- more --&gt;</span>
+</code></pre><p>就会将之前的部分生成摘要。点击”阅读全文“才会看到全文。</p>
+<h3 id="YAML">YAML</h3><p>hexo文章的头部文件是用<a href="http://en.wikipedia.org/wiki/YAML" target="_blank" rel="external">YAML</a>来写的，比如文章要同时标记多个tags，就需要用</p>
+<pre><code>tags: [ta<span class="keyword">g1</span>, ta<span class="keyword">g2</span>]
+</code></pre><p>或者</p>
+<pre><code>tags:
+-<span class="ruby"> tag1
+</span>-<span class="ruby"> tag2</span>
+</code></pre><p>这样的语法来写，详见YAML的<a href="http://en.wikipedia.org/wiki/YAML" target="_blank" rel="external">wikipedia</a>.</p>
+<h3 id="ejs和stylus">ejs和stylus</h3><p>hexo是用的ejs和stylus。同样如果习惯用LESS之类也可以装相应的plugins.</p>
+<p>ejs是embedded javascript，从js文件中抽取出html结构，使代码结构清晰简洁易读。(其实我还不太明白所以没怎么改ejs……)<br>文档存备用：<a href="https://code.google.com/p/embeddedjavascript/w/list" target="_blank" rel="external">https://code.google.com/p/embeddedjavascript/w/list</a></p>
+<p>stylus是和less/sass类似的一个css processor，比原生的css更简洁一些。<br>同样文档存备用：<a href="http://learnboost.github.io/stylus/" target="_blank" rel="external">http://learnboost.github.io/stylus/</a></p>
+<h3 id="markdown">markdown</h3><p>参见<a href="http://daringfireball.net/projects/markdown/syntax" target="_blank" rel="external">markdown syntax</a>，或者我之前的博客，<a href="http://code.wileam.com/markdown-syntax/" target="_blank" rel="external">markdown语法</a></p>
+<h3 id="疑似bug">疑似bug</h3><p>如果更新了css文件，那么需要把public的css文件删除，然后</p>
+<pre><code>$ hexo deploy <span class="comment">--generate</span>
+</code></pre><p>这样才会重新生成新的文件。我试了好几次都是这样，不知道是不是bug……</p>
+<hr>
+<p>本文源码：<a href="https://github.com/wileam/code/blob/master/source/_posts/build-a-hexo-blog-and-optimize.md" target="_blank" rel="external">https://github.com/wileam/code/blob/master/source/_posts/build-a-hexo-blog-and-optimize.md</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[Repost a post to learn how to use Markdown language]]>
+    
+    </summary>
+    
+      <category term="Chinese" scheme="http://snail-mushroom.com/tags/Chinese/"/>
+    
+      <category term="Git" scheme="http://snail-mushroom.com/tags/Git/"/>
+    
+      <category term="Hexo" scheme="http://snail-mushroom.com/tags/Hexo/"/>
+    
+      <category term="Node.js" scheme="http://snail-mushroom.com/tags/Node-js/"/>
+    
+      <category term="Repost" scheme="http://snail-mushroom.com/tags/Repost/"/>
+    
+      <category term="Hexo" scheme="http://snail-mushroom.com/categories/Hexo/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[[LeetCode]Trapping Rain Water]]></title>
+    <link href="http://snail-mushroom.com/2014/10/04/-LeetCode-Trapping-Rain-Water/"/>
+    <id>http://snail-mushroom.com/2014/10/04/-LeetCode-Trapping-Rain-Water/</id>
+    <published>2014-10-05T05:19:13.000Z</published>
+    <updated>2014-10-05T20:46:20.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Trapping_Rain_Water">Trapping Rain Water</h3><p>This is another DP problem. And it is really similar to the sell stock III<br>Your need to do the 1-dimension DP form left to right then from right to left.<br>I still need to get familiar to DP</p>
+<p>the sample code (not that elegent)<br><figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> trap(<span class="keyword">int</span>[] A) &#123;</span><br><span class="line">        <span class="keyword">if</span> (A.length &lt;= <span class="number">2</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span>[] d = <span class="keyword">new</span> <span class="keyword">int</span>[A.length];</span><br><span class="line">        d[A.length-<span class="number">1</span>] = A[A.length-<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">int</span> max = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = A.length-<span class="number">2</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">            d[i] = Math.max(A[i+<span class="number">1</span>], d[i+<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> <span class="keyword">index</span> = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> n = A.length;</span><br><span class="line">        <span class="keyword">int</span> <span class="keyword">sum</span> = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">index</span> &lt; n) &#123;</span><br><span class="line">            <span class="keyword">if</span> (d[<span class="keyword">index</span>] &lt; A[<span class="keyword">index</span>]) &#123;</span><br><span class="line">                <span class="keyword">int</span> i = <span class="keyword">index</span>+<span class="number">1</span>;</span><br><span class="line">                <span class="keyword">while</span> (i &lt; n &amp;&amp; A[i] &lt; d[<span class="keyword">index</span>]) &#123;</span><br><span class="line">                    <span class="keyword">sum</span> += d[<span class="keyword">index</span>] - A[i];</span><br><span class="line">                    i++;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">index</span> = i;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">int</span> i = <span class="keyword">index</span>+<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; n &amp;&amp; A[i] &lt; A[<span class="keyword">index</span>]) &#123;</span><br><span class="line">                <span class="keyword">sum</span> += A[<span class="keyword">index</span>]-A[i];</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">index</span> = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">sum</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>the elegent version<br><figure class="highlight vbscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> Solution &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> trap(<span class="built_in">int</span>[] A) &#123;</span><br><span class="line">        <span class="built_in">int</span> <span class="built_in">len</span> = A.length;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">len</span> &lt;= <span class="number">2</span>) return <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">int</span>[] back = <span class="keyword">new</span> <span class="built_in">int</span>[<span class="built_in">len</span>];</span><br><span class="line">        <span class="built_in">int</span>[] forward = <span class="keyword">new</span> <span class="built_in">int</span>[<span class="built_in">len</span>];</span><br><span class="line">        </span><br><span class="line">        back[<span class="built_in">len</span>-<span class="number">1</span>] = A[<span class="built_in">len</span>-<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="built_in">len</span>-<span class="number">2</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">            back[i] = Math.max(A[i+<span class="number">1</span>], back[i+<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        forward[<span class="number">0</span>] = A[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">1</span>; i &lt; <span class="built_in">len</span>; i++) &#123;</span><br><span class="line">            forward[i] = Math.max(A[i-<span class="number">1</span>], forward[i-<span class="number">1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">int</span> sum = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">1</span>; i &lt; <span class="built_in">len</span>-<span class="number">1</span>; i++) &#123;</span><br><span class="line">            sum += Math.max(<span class="number">0</span>, Math.min(forward[i]-A[i], back[i]-A[i]));</span><br><span class="line">        &#125;</span><br><span class="line">        return sum;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="Trapping_Rain_Water">Trapping Rain Water</h3><p>This is another DP problem. And it is really similar to the sell stock III<br>Your n]]>
+    </summary>
+    
+      <category term="DP" scheme="http://snail-mushroom.com/tags/DP/"/>
+    
+      <category term="LeetCode" scheme="http://snail-mushroom.com/categories/LeetCode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[A weekend afternoon]]></title>
+    <link href="http://snail-mushroom.com/2014/10/04/A-weekend-afternoon/"/>
+    <id>http://snail-mushroom.com/2014/10/04/A-weekend-afternoon/</id>
+    <published>2014-10-05T01:32:30.000Z</published>
+    <updated>2014-10-04T22:36:38.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="MUSHROOM:_SUI_SUI_NIAN">MUSHROOM: SUI SUI NIAN</h3><p>Get up really late this morning and have the ithaca wings.<br>Someone mistakely ordered a strange wing :P.<br>Hard to find a good place in Saturday afternoon and we end up with a empty classroom. Feels a little strange but not bad.<br>I decide to give up the unsolved problem in Machine learning homework. It’s really a small question but I could not figure out after several days….<br>Left for snail to solv LOL….</p>
+<p>Weekends are always the best time. Hopefully we can go out some time.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="MUSHROOM:_SUI_SUI_NIAN">MUSHROOM: SUI SUI NIAN</h3><p>Get up really late this morning and have the ithaca wings.<br>Someone mistakel]]>
+    </summary>
+    
+      <category term="mushroom" scheme="http://snail-mushroom.com/tags/mushroom/"/>
+    
+      <category term="Diary" scheme="http://snail-mushroom.com/categories/Diary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[[LeetCode]Best Time to Buy and Sell Stock]]></title>
+    <link href="http://snail-mushroom.com/2014/10/04/-LeetCode-Best-Time-to-Buy-and-Sell-Stock/"/>
+    <id>http://snail-mushroom.com/2014/10/04/-LeetCode-Best-Time-to-Buy-and-Sell-Stock/</id>
+    <published>2014-10-05T01:10:29.000Z</published>
+    <updated>2014-10-05T20:47:01.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Best_time_to_sell_stock">Best time to sell stock</h3><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> Solution &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> maxProfit(<span class="built_in">int</span>[] prices) &#123;</span><br><span class="line">        <span class="keyword">if</span> (prices.length == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">int</span> <span class="built_in">min</span> = prices[<span class="number">0</span>];</span><br><span class="line">        <span class="built_in">int</span> diff = <span class="number">0</span>;</span><br><span class="line">        for (<span class="built_in">int</span> i = <span class="number">1</span>; i &lt; prices.length; i++) &#123;</span><br><span class="line">            diff = Math.<span class="built_in">max</span>(prices[i] - <span class="built_in">min</span>, diff);</span><br><span class="line">            <span class="built_in">min</span> = Math.<span class="built_in">min</span>(<span class="built_in">min</span>, prices[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> diff;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Best_time_to_sell_stock_II">Best time to sell stock II</h3><figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> maxProfit(<span class="keyword">int</span>[] prices) &#123;</span><br><span class="line">        <span class="keyword">if</span> (prices.length == <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> prev = prices[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">int</span> <span class="keyword">sum</span> = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; prices.length; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> diff = prices[i] - prev;</span><br><span class="line">            <span class="keyword">sum</span> += diff &gt; <span class="number">0</span> ? diff : <span class="number">0</span>;</span><br><span class="line">            prev = prices[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">sum</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Best_time_to_sell_stock_III">Best time to sell stock III</h3><p>use one-dimension dynamic programming<br>from left to right, then from right to left.<br>See the code below in detail<br><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> Solution &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> maxProfit(<span class="built_in">int</span>[] prices) &#123;</span><br><span class="line">        <span class="built_in">int</span> len = prices.length;</span><br><span class="line">        <span class="keyword">if</span> (len &lt;= <span class="number">1</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">int</span>[] d1 = new <span class="built_in">int</span>[len];</span><br><span class="line">        <span class="built_in">int</span>[] d2 = new <span class="built_in">int</span>[len];</span><br><span class="line">        <span class="built_in">int</span> <span class="built_in">min</span> = prices[<span class="number">0</span>];</span><br><span class="line">        d1[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        for (<span class="built_in">int</span> i = <span class="number">1</span>; i &lt; len; i++) &#123;</span><br><span class="line">            d1[i] = Math.<span class="built_in">max</span>(prices[i] - <span class="built_in">min</span>, d1[i-<span class="number">1</span>]);</span><br><span class="line">            <span class="built_in">min</span> = Math.<span class="built_in">min</span>(prices[i], <span class="built_in">min</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="built_in">int</span> <span class="built_in">max</span> = prices[len-<span class="number">1</span>];</span><br><span class="line">        <span class="built_in">int</span> <span class="built_in">sum</span> = d1[len-<span class="number">1</span>];</span><br><span class="line">        for (<span class="built_in">int</span> i = len-<span class="number">2</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">            d2[i] = Math.<span class="built_in">max</span>(<span class="built_in">max</span> - prices[i], d2[i+<span class="number">1</span>]);</span><br><span class="line">            <span class="built_in">max</span> = Math.<span class="built_in">max</span>(prices[i], <span class="built_in">max</span>);</span><br><span class="line">            <span class="built_in">sum</span> = Math.<span class="built_in">max</span>(<span class="built_in">sum</span>, d1[i]+d2[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">sum</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[leetcode problem "sell stock" series, form easy to hard. Good example for using dynamic programming.]]>
+    
+    </summary>
+    
+      <category term="DP" scheme="http://snail-mushroom.com/tags/DP/"/>
+    
+      <category term="LeetCode" scheme="http://snail-mushroom.com/categories/LeetCode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[modified the disqus code]]></title>
+    <link href="http://snail-mushroom.com/2014/10/04/modified-the-disqus-code/"/>
+    <id>http://snail-mushroom.com/2014/10/04/modified-the-disqus-code/</id>
+    <published>2014-10-04T07:07:00.000Z</published>
+    <updated>2014-10-04T04:11:07.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Modified_the_disqus_comments_code">Modified the disqus comments code</h3><p>Because of the template “pacman” used the duoshuo comment api, I need to move it back to disqus.</p>
+<p>It is not that easy.</p>
+<p>In general,  you need to modify article.ejs, post/atricle.ejs, after-foot.ejs and so on.</p>
+<p>Finally, I made it!</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="Modified_the_disqus_comments_code">Modified the disqus comments code</h3><p>Because of the template “pacman” used the duoshuo commen]]>
+    </summary>
+    
+      <category term="Tech Trick" scheme="http://snail-mushroom.com/tags/Tech-Trick/"/>
+    
+      <category term="Hexo" scheme="http://snail-mushroom.com/categories/Hexo/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Amazing German Wine]]></title>
+    <link href="http://snail-mushroom.com/2014/10/01/Amazing-German-Wind/"/>
+    <id>http://snail-mushroom.com/2014/10/01/Amazing-German-Wind/</id>
+    <published>2014-10-02T00:12:00.000Z</published>
+    <updated>2014-10-03T23:21:58.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Great_Wine!">Great Wine!</h3><p>saw a great wine today in the wine class.<br>It is called Riesling Kabinett, Schloss Vollrads, Rheingau, GR, 2011<br>Excellent acid and sweetness, great balance!</p>
+<p><img src="http://static.wine-searcher.net/images/labels/19/41/schloss-vollrads-riesling-kabinett-rheingau-germany-10141941.jpg" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="Great_Wine!">Great Wine!</h3><p>saw a great wine today in the wine class.<br>It is called Riesling Kabinett, Schloss Vollrads, Rhein]]>
+    </summary>
+    
+      <category term="Wine" scheme="http://snail-mushroom.com/tags/Wine/"/>
+    
+      <category term="Diary" scheme="http://snail-mushroom.com/categories/Diary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Politics is drug]]></title>
+    <link href="http://snail-mushroom.com/2014/10/01/Politics-is-drug/"/>
+    <id>http://snail-mushroom.com/2014/10/01/Politics-is-drug/</id>
+    <published>2014-10-01T16:53:00.000Z</published>
+    <updated>2014-10-03T23:22:27.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Politics_is_absolutely_the_drugs_for_young_man">Politics is absolutely the drugs for young man</h3>]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="Politics_is_absolutely_the_drugs_for_young_man">Politics is absolutely the drugs for young man</h3>]]>
+    </summary>
+    
+      <category term="Chinese" scheme="http://snail-mushroom.com/tags/Chinese/"/>
+    
+      <category term="Diary" scheme="http://snail-mushroom.com/categories/Diary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Early Fall in Cornell]]></title>
+    <link href="http://snail-mushroom.com/2014/09/30/Early-Fall-in-Cornell/"/>
+    <id>http://snail-mushroom.com/2014/09/30/Early-Fall-in-Cornell/</id>
+    <published>2014-09-30T15:57:00.000Z</published>
+    <updated>2014-10-04T14:04:40.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Fall_is_coming_!">Fall is coming !</h3><p><img src="https://s3-us-west-2.amazonaws.com/www.snail-mushroom.com/2014-09-30+08.36.06.jpg" alt=""><br><img src="https://s3-us-west-2.amazonaws.com/www.snail-mushroom.com/2014-09-30+08.34.01.jpg" alt=""><br><img src="https://s3-us-west-2.amazonaws.com/www.snail-mushroom.com/2014-09-30+08.33.47.jpg" alt=""></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="Fall_is_coming_!">Fall is coming !</h3><p><img src="https://s3-us-west-2.amazonaws.com/www.snail-mushroom.com/2014-09-30+08.36.06.jp]]>
+    </summary>
+    
+      <category term="photo" scheme="http://snail-mushroom.com/tags/photo/"/>
+    
+      <category term="Diary" scheme="http://snail-mushroom.com/categories/Diary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[add scroll bar to top]]></title>
+    <link href="http://snail-mushroom.com/2014/09/28/add-scroll-bar-to-top/"/>
+    <id>http://snail-mushroom.com/2014/09/28/add-scroll-bar-to-top/</id>
+    <published>2014-09-29T05:28:00.000Z</published>
+    <updated>2014-10-03T23:23:02.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="repost_from_Jark’s_Blog">repost from Jark’s Blog</h3><a id="more"></a>
+<p><a href="http://wuchong.me/blog/2014/01/08/hexo-scrollup/" target="_blank" rel="external">http://wuchong.me/blog/2014/01/08/hexo-scrollup/</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="repost_from_Jark’s_Blog">repost from Jark’s Blog</h3>]]>
+    
+    </summary>
+    
+      <category term="Tech Trick" scheme="http://snail-mushroom.com/tags/Tech-Trick/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[The first day without hearthstone]]></title>
+    <link href="http://snail-mushroom.com/2014/09/28/the-first-day-without-hearthstone/"/>
+    <id>http://snail-mushroom.com/2014/09/28/the-first-day-without-hearthstone/</id>
+    <published>2014-09-29T04:30:00.000Z</published>
+    <updated>2014-10-03T23:23:13.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="First_day_without_Hearthstone-">First day without Hearthstone.</h3><p>I feel calm and peaceful. I went to Microsoft’s pre-interview session. I find that attending people are less than what I have expected.<br>I missed Leroy Jekkins!</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="First_day_without_Hearthstone-">First day without Hearthstone.</h3><p>I feel calm and peaceful. I went to Microsoft’s pre-interview ]]>
+    </summary>
+    
+      <category term="Diary" scheme="http://snail-mushroom.com/categories/Diary/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[an miserable astonishing night]]></title>
+    <link href="http://snail-mushroom.com/2014/09/27/an-miserable-astonishing-night/"/>
+    <id>http://snail-mushroom.com/2014/09/27/an-miserable-astonishing-night/</id>
+    <published>2014-09-28T05:48:35.000Z</published>
+    <updated>2014-09-28T02:50:17.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Guess_What?">Guess What?</h3><p>We deleted hearthstone today wuwuwuwu……TT.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="Guess_What?">Guess What?</h3><p>We deleted hearthstone today wuwuwuwu……TT.</p>
+]]>
+    </summary>
+    
+      <category term="Mushroom" scheme="http://snail-mushroom.com/tags/Mushroom/"/>
+    
+  </entry>
+  
+</feed>
