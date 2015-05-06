@@ -4,7 +4,7 @@
   <subtitle><![CDATA[practice makes prefect]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://snail-mushroom.com/"/>
-  <updated>2014-10-28T15:27:49.000Z</updated>
+  <updated>2015-05-06T04:31:57.000Z</updated>
   <id>http://snail-mushroom.com/</id>
   
   <author>
@@ -13,6 +13,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[migrate-hexo]]></title>
+    <link href="http://snail-mushroom.com/2015/05/05/migrate-hexo/"/>
+    <id>http://snail-mushroom.com/2015/05/05/migrate-hexo/</id>
+    <published>2015-05-06T04:25:19.000Z</published>
+    <updated>2015-05-06T04:31:57.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="hexo_从air_搬到_pro">hexo 从air 搬到 pro</h1><h3 id="最主要的几步">最主要的几步</h3><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cp _config.yml back_up_config    </span><br><span class="line">hexo init &lt;hexo-<span class="keyword">dir</span>&gt;    </span><br><span class="line">mv back_up_config _config.yml    </span><br><span class="line">hexo <span class="keyword">update</span>   </span><br><span class="line">sudo npm up npm -<span class="keyword">g</span>   </span><br><span class="line">npm install   </span><br><span class="line">hexo clean    </span><br><span class="line">hexo <span class="keyword">generate</span></span><br></pre></td></tr></table></figure>
+<h3 id="clean_cache">clean cache</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">hexo</span> clean</span><br></pre></td></tr></table></figure>
+<h3 id="install_hexo">install hexo</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="operator"><span class="keyword">install</span> hexo <span class="comment">--save</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="install_generators">install generators</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="operator"><span class="keyword">install</span> hexo-generator-<span class="keyword">index</span> <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-archive <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-category <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-tag <span class="comment">--save</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="install_deplpyers">install deplpyers</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="operator"><span class="keyword">install</span> hexo-generator-<span class="keyword">index</span> <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-archive <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-category <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-tag <span class="comment">--save</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="Note">Note</h3><p>在 _config 文件中 要把github的 type从 github改成 git<br>目前这个事hexo 3.0版本的一个小bug</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[some simple commands to help migrate hexo 3.0]]>
+    
+    </summary>
+    
+      <category term="Hexo" scheme="http://snail-mushroom.com/categories/Hexo/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[Singleton Mode]]></title>
@@ -172,7 +194,7 @@
     <id>http://snail-mushroom.com/2014/10/08/Loop-unwinding/</id>
     <published>2014-10-08T23:34:33.000Z</published>
     <updated>2014-10-09T02:27:13.000Z</updated>
-    <content type="html"><![CDATA[<h3 id="Loop_Unwinding">Loop Unwinding</h3><h1 id="Original_Version">Original Version</h1><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="built_in">i</span> = <span class="number">1</span>; <span class="built_in">i</span> &lt;= <span class="number">60</span>; <span class="built_in">i</span>++) <span class="cell">&#123;</span><br><span class="line">   a[i] = a[i] * b + c;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+    <content type="html"><![CDATA[<h3 id="Loop_Unwinding">Loop Unwinding</h3><h1 id="Original_Version">Original Version</h1><figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">60</span>; i++) <span class="comment">&#123;</span><br><span class="line">   a[i] = a[i] * b + c;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
 <h1 id="Improved_Version">Improved Version</h1><figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">60</span>; i+=<span class="number">3</span>) <span class="comment">&#123;</span><br><span class="line">  a[i] = a[i] * b + c;</span><br><span class="line">  a[i+1] = a[i+1] * b + c;</span><br><span class="line">  a[i+2] = a[i+2] * b + c;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
 <p>As we could see, the run times of ‘i&lt;=60’ and i++ have been reduced 3 times<br>Although the code is not that elegent, but the performance will be advanced.</p>
 ]]></content>
@@ -565,23 +587,6 @@ $ npm <span class="keyword">update</span></span>
     </summary>
     
       <category term="Diary" scheme="http://snail-mushroom.com/categories/Diary/"/>
-    
-  </entry>
-  
-  <entry>
-    <title><![CDATA[an miserable astonishing night]]></title>
-    <link href="http://snail-mushroom.com/2014/09/27/an-miserable-astonishing-night/"/>
-    <id>http://snail-mushroom.com/2014/09/27/an-miserable-astonishing-night/</id>
-    <published>2014-09-28T05:48:35.000Z</published>
-    <updated>2014-09-28T02:50:17.000Z</updated>
-    <content type="html"><![CDATA[<h3 id="Guess_What?">Guess What?</h3><p>We deleted hearthstone today wuwuwuwu……TT.</p>
-]]></content>
-    <summary type="html">
-    <![CDATA[<h3 id="Guess_What?">Guess What?</h3><p>We deleted hearthstone today wuwuwuwu……TT.</p>
-]]>
-    </summary>
-    
-      <category term="Mushroom" scheme="http://snail-mushroom.com/tags/Mushroom/"/>
     
   </entry>
   

@@ -96,7 +96,7 @@
 		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Loop_Unwinding"><span class="toc-number">1.</span> <span class="toc-text">Loop Unwinding</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Original_Version"><span class="toc-number"></span> <span class="toc-text">Original Version</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Improved_Version"><span class="toc-number"></span> <span class="toc-text">Improved Version</span></a>
 		</div>
 		
-		<h3 id="Loop_Unwinding">Loop Unwinding</h3><h1 id="Original_Version">Original Version</h1><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="built_in">i</span> = <span class="number">1</span>; <span class="built_in">i</span> &lt;= <span class="number">60</span>; <span class="built_in">i</span>++) <span class="cell">&#123;</span><br><span class="line">   a[i] = a[i] * b + c;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+		<h3 id="Loop_Unwinding">Loop Unwinding</h3><h1 id="Original_Version">Original Version</h1><figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">60</span>; i++) <span class="comment">&#123;</span><br><span class="line">   a[i] = a[i] * b + c;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
 <h1 id="Improved_Version">Improved Version</h1><figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">60</span>; i+=<span class="number">3</span>) <span class="comment">&#123;</span><br><span class="line">  a[i] = a[i] * b + c;</span><br><span class="line">  a[i+1] = a[i+1] * b + c;</span><br><span class="line">  a[i+2] = a[i+2] * b + c;</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
 <p>As we could see, the run times of ‘i&lt;=60’ and i++ have been reduced 3 times<br>Although the code is not that elegent, but the performance will be advanced.</p>
   
@@ -182,7 +182,7 @@
 		
 			<li><a href="/categories/Diary/" title="Diary">Diary<sup>6</sup></a></li>
 		
-			<li><a href="/categories/Hexo/" title="Hexo">Hexo<sup>2</sup></a></li>
+			<li><a href="/categories/Hexo/" title="Hexo">Hexo<sup>3</sup></a></li>
 		
 			<li><a href="/categories/LeetCode/" title="LeetCode">LeetCode<sup>4</sup></a></li>
 		

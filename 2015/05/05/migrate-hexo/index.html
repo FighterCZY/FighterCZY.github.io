@@ -4,18 +4,20 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>an miserable astonishing night | Snail-Mushroom</title>
+    <title>migrate-hexo | Snail-Mushroom</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="Zach Cai with Kathy Zhao">
     
-    <meta name="description" content="Guess What?We deleted hearthstone today wuwuwuwu……TT.">
+    <meta name="description" itemprop="description" content="some simple commands to help migrate hexo 3.0">
     
     
     
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="FighterCZY" />
-    <meta name="twitter:title" content="an miserable astonishing night | Snail-Mushroom" />
+    <meta name="twitter:title" content="migrate-hexo | Snail-Mushroom" />
+      
+        <meta name="twitter:description" content="some simple commands to help migrate hexo 3.0" />
       
     
     
@@ -74,15 +76,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/09/27/an-miserable-astonishing-night/" title="an miserable astonishing night" itemprop="url">an miserable astonishing night</a>
+      <a href="/2015/05/05/migrate-hexo/" title="migrate-hexo" itemprop="url">migrate-hexo</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://snail-mushroom.com" title="Zach Cai with Kathy Zhao">Zach Cai with Kathy Zhao</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-09-28T05:48:35.000Z" itemprop="datePublished">Sep 27 2014</time>
-    更新日期:<time datetime="2014-09-28T02:50:17.000Z" itemprop="dateModified">Sep 27 2014</time>
+    <time datetime="2015-05-06T04:25:19.000Z" itemprop="datePublished">May 5 2015</time>
+    更新日期:<time datetime="2015-05-06T04:31:57.000Z" itemprop="dateModified">May 5 2015</time>
     
   </p>
 </header>
@@ -91,25 +93,30 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目錄</strong>
-		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Guess_What?"><span class="toc-number">1.</span> <span class="toc-text">Guess What?</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#hexo_从air_搬到_pro"><span class="toc-number">1.</span> <span class="toc-text">hexo 从air 搬到 pro</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#最主要的几步"><span class="toc-number">1.0.1.</span> <span class="toc-text">最主要的几步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#clean_cache"><span class="toc-number">1.0.2.</span> <span class="toc-text">clean cache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#install_hexo"><span class="toc-number">1.0.3.</span> <span class="toc-text">install hexo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#install_generators"><span class="toc-number">1.0.4.</span> <span class="toc-text">install generators</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#install_deplpyers"><span class="toc-number">1.0.5.</span> <span class="toc-text">install deplpyers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Note"><span class="toc-number">1.0.6.</span> <span class="toc-text">Note</span></a></li></ol></li></ol></li></ol>
 		</div>
 		
-		<h3 id="Guess_What?">Guess What?</h3><p>We deleted hearthstone today wuwuwuwu……TT.</p>
+		<h1 id="hexo_从air_搬到_pro">hexo 从air 搬到 pro</h1><h3 id="最主要的几步">最主要的几步</h3><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cp _config.yml back_up_config    </span><br><span class="line">hexo init &lt;hexo-<span class="keyword">dir</span>&gt;    </span><br><span class="line">mv back_up_config _config.yml    </span><br><span class="line">hexo <span class="keyword">update</span>   </span><br><span class="line">sudo npm up npm -<span class="keyword">g</span>   </span><br><span class="line">npm install   </span><br><span class="line">hexo clean    </span><br><span class="line">hexo <span class="keyword">generate</span></span><br></pre></td></tr></table></figure>
+<h3 id="clean_cache">clean cache</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">hexo</span> clean</span><br></pre></td></tr></table></figure>
+<h3 id="install_hexo">install hexo</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="operator"><span class="keyword">install</span> hexo <span class="comment">--save</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="install_generators">install generators</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="operator"><span class="keyword">install</span> hexo-generator-<span class="keyword">index</span> <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-archive <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-category <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-tag <span class="comment">--save</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="install_deplpyers">install deplpyers</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="operator"><span class="keyword">install</span> hexo-generator-<span class="keyword">index</span> <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-archive <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-category <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-tag <span class="comment">--save</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="Note">Note</h3><p>在 _config 文件中 要把github的 type从 github改成 git<br>目前这个事hexo 3.0版本的一个小bug</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/Mushroom/">Mushroom</a>
-  </div>
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Hexo/">Hexo</a>
+</div>
 
 
 
 <div class="article-share" id="share">
 
-  <div data-url="http://snail-mushroom.com/2014/09/27/an-miserable-astonishing-night/" data-title="an miserable astonishing night | Snail-Mushroom" data-tsina="null" class="share clearfix">
+  <div data-url="http://snail-mushroom.com/2015/05/05/migrate-hexo/" data-title="migrate-hexo | Snail-Mushroom" data-tsina="null" class="share clearfix">
   </div>
 
 </div>
@@ -118,19 +125,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2014/09/28/the-first-day-without-hearthstone/" title="The first day without hearthstone">
-  <strong>PREVIOUS:</strong><br/>
-  <span>
-  The first day without hearthstone</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2014/09/27/photo-post/"  title="photo post">
+<a href="/2014/10/26/Singleton-Mode/"  title="Singleton Mode">
  <strong>NEXT:</strong><br/> 
- <span>photo post
+ <span>Singleton Mode
 </span>
 </a>
 </div>
@@ -155,7 +154,7 @@
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目錄</strong>
-  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Guess_What?"><span class="toc-number">1.</span> <span class="toc-text">Guess What?</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#hexo_从air_搬到_pro"><span class="toc-number">1.</span> <span class="toc-text">hexo 从air 搬到 pro</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#最主要的几步"><span class="toc-number">1.0.1.</span> <span class="toc-text">最主要的几步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#clean_cache"><span class="toc-number">1.0.2.</span> <span class="toc-text">clean cache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#install_hexo"><span class="toc-number">1.0.3.</span> <span class="toc-text">install hexo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#install_generators"><span class="toc-number">1.0.4.</span> <span class="toc-text">install generators</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#install_deplpyers"><span class="toc-number">1.0.5.</span> <span class="toc-text">install deplpyers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Note"><span class="toc-number">1.0.6.</span> <span class="toc-text">Note</span></a></li></ol></li></ol></li></ol>
   </div>
 
 <div id="asidepart">
